@@ -764,7 +764,7 @@ merge.stars = function(x, y, ..., name = "attributes") {
 	if (!missing(y))
 		stop("argument y needs to be missing: merging attributes of x")
 	old_dim = st_dimensions(x)
-	out = do.call(abind, st_redimension(x))
+	out = do.call(abind, st_redimension(x, name = name))
 	if (is.factor(x[[1]]) && is.character(out))
 		out = structure(factor(as.vector(out), levels = levels(x[[1]])), dim = dim(out))
 	new_dim = if (length(dots))
@@ -806,9 +806,10 @@ st_redimension = function(x, new_dims, along, ...) UseMethod("st_redimension")
 #' @param x object of class \code{stars}
 #' @param new_dims target dimensions: either a `dimensions` object or an integer vector with the dimensions' sizes
 #' @param along named list with new dimension name and values
+#' @param name name of the attribute
 #' @param ... ignored
 st_redimension.stars = function(x, new_dims = st_dimensions(x), 
-		along = list(new_dim = names(x)), ...) {
+		along = list(new_dim = names(x)), name = NULL, ...) {
 
 	d = st_dimensions(x)
 	if (inherits(new_dims, "dimensions")) {
@@ -836,7 +837,8 @@ st_redimension.stars = function(x, new_dims = st_dimensions(x),
 			if (length(names(along)) == 1)
 				names(dims)[names(dims) == "new_dim"] = names(along)
 			ret = list(attr = do.call(abind, c(unclass(x), along = length(dim(x)) + 1)))
-			st_stars(setNames(ret, paste(names(x), collapse = ".")), dimensions = dims)
+			if(!is.null(name)) { ret_names = name } else { ret_names = paste(names(x), collapse = ".") }
+			st_stars(setNames(ret, ret_names), dimensions = dims)
 		}
 	}
 }

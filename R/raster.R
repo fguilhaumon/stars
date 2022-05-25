@@ -254,7 +254,7 @@ fix_dims = function(r, e){
 	r
 }
 
-st_as_raster = function(x, class, ...) {
+st_as_raster = function(x, class, name = NULL, ...) {
 	stopifnot(inherits(x, "stars"))
 	x_crs = st_crs(x)
 	x = st_upfront(x) # x/y dimensions first
@@ -263,7 +263,7 @@ st_as_raster = function(x, class, ...) {
 		x = st_apply(x, 1:2, as.vector) # fortunes::fortune("side effect") # nocov
 	}
 	if (length(dim(x)) == 2 && length(x) > 1)
-		x = merge(x)
+		x = merge(x, name = name)
 	d = st_dimensions(x)
 	if (d[[2]]$delta > 0) { # swap:
 		ny = dim(x)[2]
